@@ -4,7 +4,6 @@ import java.util.Random;
 
 public class ThreadState {
     public static void main(String[] args) {
-        Random random = new Random();
         Thread first = new Thread(
                 () -> System.out.println(Thread.currentThread().getName())
         );
@@ -15,7 +14,8 @@ public class ThreadState {
         second.start();
         while (first.getState() != Thread.State.TERMINATED
                 && second.getState() != Thread.State.TERMINATED) {
-            System.out.println(random.nextInt(100));
+            System.out.println("Первая нить " + first.getState());
+            System.out.println("Вторая нить " + second.getState());
         }
         System.out.println("Работа завершена");
     }
