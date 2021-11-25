@@ -30,7 +30,6 @@ public class Wget implements Runnable {
                 bytesWrited += byteRead;
                 if (bytesWrited >= speed) {
                     deltaTime = System.currentTimeMillis() - startTime;
-                    System.out.println(deltaTime);
                     if (deltaTime < 1000) {
                         Thread.sleep(1000 - deltaTime);
                     }
