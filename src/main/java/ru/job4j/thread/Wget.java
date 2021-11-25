@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Path;
 
 public class Wget implements Runnable {
     private final String url;
@@ -21,17 +20,23 @@ public class Wget implements Runnable {
     public void run() {
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
              FileOutputStream fileOutputStream = new FileOutputStream(out)) {
-            byte[] dataBuffer = new byte[1024];
+            byte[] dataBuffer = new byte[speed];
             int byteRead;
+            long bytesWrited = 0;
+            long deltaTime;
             var startTime = System.currentTimeMillis();
-            while ((byteRead = in.read(dataBuffer, 0, 1024)) != -1) {
+            while ((byteRead = in.read(dataBuffer, 0, speed)) != -1) {
                 fileOutputStream.write(dataBuffer, 0, byteRead);
-                var result = System.currentTimeMillis() - startTime;
-                System.out.println(result);
-                if (result < speed) {
-                    Thread.sleep(speed - result);
+                bytesWrited += byteRead;
+                if (bytesWrited >= speed) {
+                    deltaTime = System.currentTimeMillis() - startTime;
+                    System.out.println(deltaTime);
+                    if (deltaTime < 1000) {
+                        Thread.sleep(1000 - deltaTime);
+                    }
+                    bytesWrited = 0;
+                    startTime = System.currentTimeMillis();
                 }
-                startTime = System.currentTimeMillis();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,18 +46,25 @@ public class Wget implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        if (args.length != 3) {
-            throw new IllegalArgumentException("Write arguments: url speed targetPlace");
-        }
+        validate(args);
         String url = args[0];
-        int speed = Integer.parseInt(args[1]);
-        var path = Path.of(args[2]);
-        if (!path.toFile().isFile() || !path.isAbsolute()) {
-            throw new IllegalArgumentException("Write out path is absolute: C:\\projects\\out.html");
-        }
+        int speed = Integer.parseInt(args[1]) * 1024 * 1024;
         String out = args[2];
         Thread wget = new Thread(new Wget(url, speed, out));
         wget.start();
         wget.join();
+    }
+
+    private static void validate(String[] args) {
+        if (args.length != 3) {
+            throw new IllegalArgumentException("Напишите аргументы в формате: url speed target,"
+                    + System.lineSeparator()
+                    + "где url - целевая страница для парсинга" + System.lineSeparator()
+                    + "speed - ограничение скорости скачивания, Мбайт/с" + System.lineSeparator()
+                    + "target - целевой файл для сохранения");
+        }
+        if (args[1].length() > 100) {
+            throw new IllegalArgumentException("Единицы измерения второго параметра speed - МБайт/с");
+        }
     }
 }
