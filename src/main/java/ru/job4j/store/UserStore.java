@@ -50,20 +50,20 @@ public class UserStore implements Store<User> {
      * @param amount кол-во денежных средств для перевода
      */
     public synchronized boolean transfer(int fromId, int toId, int amount) {
-        if (!store.containsKey(fromId)) {
-            throw new IllegalArgumentException("Payer dont exist");
-        }
-        if (!store.containsKey(toId)) {
-            throw new IllegalArgumentException("Payment reciever dont exist");
-        }
         var fromUser = store.get(fromId);
+        var toUser = store.get(toId);
+        if (fromUser == null) {
+            throw new IllegalArgumentException(String.format("Payer with Id = %s don't exist", fromId));
+        }
+        if (toUser == null) {
+            throw new IllegalArgumentException(String.format("Payment receiver with Id = %s don't exist", toId));
+        }
         if (fromUser.getAmount() <= amount) {
             throw new IllegalArgumentException("Payer's account got not enough money");
         }
-        var toUser = store.get(toId);
         fromUser.setAmount(fromUser.getAmount() - amount);
         toUser.setAmount(toUser.getAmount() + amount);
-        return update(fromUser) && update(toUser);
+        return true;
     }
 
     /**
