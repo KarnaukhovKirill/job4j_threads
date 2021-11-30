@@ -53,10 +53,10 @@ public class UserStore implements Store<User> {
         var fromUser = store.get(fromId);
         var toUser = store.get(toId);
         if (fromUser == null) {
-            throw new IllegalArgumentException(String.format("Payer with Id = %s don't exist", fromId));
+            throw new IllegalArgumentException(String.format("Payer with Id = %d don't exist", fromId));
         }
         if (toUser == null) {
-            throw new IllegalArgumentException(String.format("Payment receiver with Id = %s don't exist", toId));
+            throw new IllegalArgumentException(String.format("Payment receiver with Id = %d don't exist", toId));
         }
         if (fromUser.getAmount() <= amount) {
             throw new IllegalArgumentException("Payer's account got not enough money");
