@@ -64,12 +64,12 @@ public class CountBarrier {
         CountBarrier cb = new CountBarrier(5);
         Thread counterThread = new Thread(
                 () -> {
-                    for (int i = 0; i < 10; i++) {
+                    while (!Thread.currentThread().isInterrupted()) {
                         cb.count();
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
                         }
 
                     }
@@ -79,6 +79,7 @@ public class CountBarrier {
                 () -> {
                     cb.await();
                     cb.killNeighbor();
+                    counterThread.interrupt();
                 }
         );
         counterThread.start();
