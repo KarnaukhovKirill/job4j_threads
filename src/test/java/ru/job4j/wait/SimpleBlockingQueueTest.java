@@ -20,7 +20,11 @@ public class SimpleBlockingQueueTest {
         SimpleBlockingQueue<Integer> sbq = new SimpleBlockingQueue<>(maxSize);
         Thread producer = new Thread(() -> {
             while (true) {
-                sbq.offer(10);
+                try {
+                    sbq.offer(10);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         });
         producer.start();
@@ -34,20 +38,29 @@ public class SimpleBlockingQueueTest {
         List<Integer> buffer = new ArrayList<>();
         SimpleBlockingQueue<Integer> sbq = new SimpleBlockingQueue<>(maxSize);
         Thread producer = new Thread(() -> {
-            sbq.offer(1);
-            sbq.offer(2);
-            sbq.offer(3);
+            try {
+                sbq.offer(1);
+                sbq.offer(2);
+                sbq.offer(3);
+            }  catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+        }
         });
         Thread consumer = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                buffer.add(sbq.poll());
+                try {
+                    buffer.add(sbq.poll());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         });
         producer.start();
-        Thread.sleep(100);
-        producer.interrupt();
+        Thread.sleep(1000);
         consumer.start();
         Thread.sleep(1000);
+        consumer.interrupt();
+        consumer.join();
         assertThat(buffer, is(List.of(1, 2, 3)));
     }
 }
