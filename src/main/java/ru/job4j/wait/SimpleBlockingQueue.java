@@ -2,7 +2,6 @@ package ru.job4j.wait;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
-
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -32,8 +31,9 @@ public class SimpleBlockingQueue<T> {
             while (queue.size() == 0) {
                     monitor.wait();
             }
+            var rsl = queue.poll();
             monitor.notifyAll();
-            return queue.poll();
+            return rsl;
         }
     }
 

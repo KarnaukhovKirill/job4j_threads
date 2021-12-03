@@ -4,10 +4,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -44,7 +40,7 @@ public class SimpleBlockingQueueTest {
                 sbq.offer(3);
             }  catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-        }
+            }
         });
         Thread consumer = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
