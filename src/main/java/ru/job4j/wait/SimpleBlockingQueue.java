@@ -41,6 +41,11 @@ public class SimpleBlockingQueue<T> {
         synchronized (monitor) {
             return queue.size();
         }
+    }
 
+    public boolean isEmpty() {
+        synchronized (monitor) {
+            return queue.isEmpty();
+        }
     }
 }

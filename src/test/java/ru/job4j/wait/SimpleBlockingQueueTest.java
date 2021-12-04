@@ -1,9 +1,9 @@
 package ru.job4j.wait;
 
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -15,7 +15,7 @@ public class SimpleBlockingQueueTest {
         int maxSize = 3;
         SimpleBlockingQueue<Integer> sbq = new SimpleBlockingQueue<>(maxSize);
         Thread producer = new Thread(() -> {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     sbq.offer(10);
                 } catch (InterruptedException e) {
@@ -25,38 +25,80 @@ public class SimpleBlockingQueueTest {
         });
         producer.start();
         Thread.sleep(100);
+        producer.interrupt();
+        producer.join();
         assertThat(sbq.size(), is(maxSize));
     }
 
     @Test
-    public void whenPoll() throws InterruptedException {
-        int maxSize = 3;
-        List<Integer> buffer = new ArrayList<>();
-        SimpleBlockingQueue<Integer> sbq = new SimpleBlockingQueue<>(maxSize);
-        Thread producer = new Thread(() -> {
-            try {
-                sbq.offer(1);
-                sbq.offer(2);
-                sbq.offer(3);
-            }  catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
-        Thread consumer = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    buffer.add(sbq.poll());
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
+    public void job4jTest() throws InterruptedException {
+        final CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
+        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(1);
+        Thread producer = new Thread(
+                () -> IntStream.range(0, 5)
+                        .forEach(
+                                i -> {
+                            try {
+                                queue.offer(i);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                        })
+        );
         producer.start();
-        Thread.sleep(1000);
+        Thread consumer = new Thread(
+                () -> {
+                    while (!queue.isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        try {
+                            buffer.add(queue.poll());
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+
+                    }
+                }
+        );
         consumer.start();
-        Thread.sleep(1000);
+        producer.join();
         consumer.interrupt();
         consumer.join();
-        assertThat(buffer, is(List.of(1, 2, 3)));
+        assertThat(buffer, is(Arrays.asList(0, 1, 2, 3, 4)));
+    }
+
+    @Test
+    public void arrayOfferPollTest() throws InterruptedException {
+        String[] words = new String[] {"Java", "is", "so", "hard", ",", "but", "I", "love", "it"};
+        SimpleBlockingQueue<String> sbq = new SimpleBlockingQueue<>(3);
+        String[] buffer = new String[words.length];
+        Thread producer = new Thread(
+                () -> Arrays.stream(words).forEach(
+                        i -> {
+                    try {
+                        sbq.offer(i);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                        }
+                )
+        );
+        producer.start();
+        Thread consumer = new Thread(
+                () -> {
+                    while (!sbq.isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        for (int i = 0; i < buffer.length; i++) {
+                            try {
+                                buffer[i] = sbq.poll();
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                        }
+                    }
+                }
+        );
+        consumer.start();
+        producer.join();
+        consumer.interrupt();
+        consumer.join();
+        assertThat(words, is(buffer));
     }
 }
