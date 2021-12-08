@@ -7,15 +7,8 @@ import java.util.concurrent.Executors;
  * Сервис для рассылки почти
  */
 public class EmailNotification {
-    private static final EmailNotification INSTANCE = new EmailNotification();
     private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public EmailNotification() {
-    }
-
-    public static EmailNotification getInstance() {
-        return INSTANCE;
-    }
     /**
      * Метод должен отправлять почту через ExecutorService
      * @param user пользователь с email
@@ -49,6 +42,5 @@ public class EmailNotification {
      * @param email email конкретного {@link User}
      */
     public void send(String subject, String body, String email) {
-
     }
 }
