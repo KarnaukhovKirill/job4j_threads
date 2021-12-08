@@ -12,6 +12,10 @@ public class SimpleBlockingQueue<T> {
     private final Queue<T> queue = new LinkedList<>();
     private final int count;
 
+    public SimpleBlockingQueue() {
+        count = 5;
+    }
+
     public SimpleBlockingQueue(int count) {
         this.count = count;
     }
