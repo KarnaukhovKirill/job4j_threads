@@ -26,7 +26,15 @@ public class ThreadPool {
 
     private void init() {
         for (int i = 0; i != coreCount; i++) {
-            Thread thread = new Job(tasks);
+            Thread thread = new Thread(() -> {
+                try {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        tasks.poll().run();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
             thread.start();
             threads.add(thread);
         }
