@@ -1,6 +1,5 @@
 package ru.job4j.pools;
 
-import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
@@ -27,7 +26,7 @@ public class ParallelFinderIndex extends RecursiveTask<Integer> {
     @Override
     protected Integer compute() {
         if (to - from <= 10) {
-            return indexOf(from, to);
+            return indexOf();
         }
         int mid = (from + to) / 2;
         ParallelFinderIndex leftFinder = new ParallelFinderIndex(array, from, mid, number);
@@ -36,16 +35,10 @@ public class ParallelFinderIndex extends RecursiveTask<Integer> {
         rightFinder.fork();
         var left = leftFinder.join();
         var right = rightFinder.join();
-        if (Objects.equals(left, right)) {
-            return left;
-        } else if (left == -1) {
-            return right;
-        } else {
-            return left;
-        }
+        return Math.max(left, right);
     }
 
-    private int indexOf(int from, int to) {
+    private int indexOf() {
         int rsl = -1;
         for (int i = from; i <= to; i++) {
             if (array[i] == number) {

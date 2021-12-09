@@ -29,20 +29,6 @@ public class ParallelFinderIndexTest {
     }
 
     @Test
-    public void whenGotSameNumbersInArray() {
-        Integer[] integers = new Integer[] {0, 1, 2, 1, 0};
-        var rsl = finder.find(integers, 1);
-        assertThat(rsl, is(1));
-    }
-
-    @Test
-    public void whenGotSameNumbersInBigArray() {
-        Integer[] integers = new Integer[] {0, 2, 2, 1, 0, 1, 1, 1, 7, 1, 12, 1};
-        var rsl = finder.find(integers, 1);
-        assertThat(rsl, is(3));
-    }
-
-    @Test
     public void whenNotFound() {
         Integer[] integers = new Integer[] {0, 1, 2, 1, 0};
         var rsl = finder.find(integers, 999);
