@@ -1,5 +1,8 @@
 package ru.job4j.concurrent;
 
+/**
+ * Пример использования конкурентного вывода
+ */
 public class ConcurrentOutput {
     public static void main(String[] args) {
         Thread another = new Thread(
