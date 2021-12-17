@@ -1,7 +1,7 @@
 package ru.job4j.concurrent;
 
 /**
- * Точно нужно удалить
+ * Этот класс нужно удалить
  */
 public class Example {
     public int count(int x) {
