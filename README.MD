@@ -6,4 +6,4 @@
 [![codecov](https://codecov.io/gh/KarnaukhovKirill/job4j_threads/branch/master/graph/badge.svg?token=FOFXNVPC1A)](https://codecov.io/gh/KarnaukhovKirill/job4j_threads)
 
 Rebase two last commits
-
+В проекте производилась работа с git
