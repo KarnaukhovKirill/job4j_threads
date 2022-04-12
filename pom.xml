@@ -46,10 +46,10 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>Wget</finalName>
+              <finalName>Pool</finalName>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>ru.job4j.thread.Wget</mainClass>
+                  <mainClass>ru.job4j.pool.Main</mainClass>
                 </transformer>
               </transformers>
             </configuration>
